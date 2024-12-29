@@ -1,1 +1,1 @@
-export const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
+export const apiUrl = 'https://lionelsocial-server.onrender.com/api' || "http://localhost:8000/api";
