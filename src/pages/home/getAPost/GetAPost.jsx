@@ -25,6 +25,7 @@ import { getAPostGroup } from '../../../api/group/group';
 import socket from '../../../socket';
 import { getAChat } from '../../../api/chat/chat';
 import callSound from "../../../assets/sounds/call.mp4";
+import { setClearComment } from '../../../redux/postSlice';
 
 const GetAPost = () => {
     const { postId } = useParams();
@@ -154,6 +155,7 @@ const GetAPost = () => {
 
     const handleGoBack = () => {
         navigate(-1);  // Quay lại trang trước đó
+        dispatch(setClearComment())
         URL.revokeObjectURL(imagePreview);
     };
 

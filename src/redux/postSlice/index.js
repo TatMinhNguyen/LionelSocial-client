@@ -32,7 +32,10 @@ const post = createSlice({
         state.userPosts = []
         state.comments = []
         state.friendsPosts = []
-      } 
+      } ,
+      setClearComment: (state) => {
+        state.comments = []
+      }
     },
 })
 
@@ -41,7 +44,8 @@ export const {
     setUserPost,
     setComments,
     setFriendsPosts,
-    setClearPost
+    setClearPost, 
+    setClearComment
   } = post.actions
   
 export default post.reducer

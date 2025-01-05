@@ -118,16 +118,12 @@ const Room = () => {
           console.log('User disconnected:', peerId);
           setRemoteStreams((prevStreams) => {
             const updatedStreams = prevStreams.filter((remote) => remote.peerId !== peerId);
-            // console.log(updatedStreams)
-            // Kiểm tra số lượng người còn lại (chỉ còn 1 người là chính mình)
             if (updatedStreams?.length === 0) {
               console.log('Only one user left. Ending the call.');
               stopStream();
               socket.emit('end-call', { roomId });
-              // socket.emit('leave-room', { roomId, peerId: peerInstance.current?.id });
               
               peerInstance.current?.destroy();
-              // navigate(-1); // Điều hướng về màn hình trước
             }
         
             return updatedStreams;
@@ -136,7 +132,6 @@ const Room = () => {
 
         return () => {
           stopStream();
-          // socket.emit('leave-room', { roomId, peerId: peerInstance.current?.id });
           peerInstance.current?.destroy();
         };
       } catch (error) {
