@@ -43,6 +43,8 @@ const UserPosts = () => {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [hoveredPostId, setHoveredPostId] = useState(null);
 
+    const [reactions, setReactions] = useState({})
+
     const modalRef = useRef(null);
     const navigation = useNavigate();
     const dispatch = useDispatch();
@@ -78,38 +80,117 @@ const UserPosts = () => {
         setHoveredPostId(null);
     };
 
-    const handleLike = async(postId, type) => {
-        try {
+    useEffect(() => {
+        // Khởi tạo trạng thái từ giá trị `post.is_feel`
+        const initialReactions = {};
+        posts?.forEach((post) => {
+          initialReactions[post.postId] = mapFeelToReaction(post.is_feel);
+        });
+        setReactions(initialReactions);
+    }, [posts]);
+    
+    // Hàm chuyển đổi `is_feel` sang `reaction`
+    const mapFeelToReaction = (isFeel) => {
+        switch (isFeel) {
+          case "1":
+            return "like";
+          case "2":
+            return "love";
+          case "3":
+            return "haha";
+          case "4":
+            return "sad";
+          default:
+            return "";
+        }
+    };
+
+    const handleSetFelt = async(postId, type) => {
             const data = {
                 postId: postId,
                 type: type
-            }
+            }        
+        try {
             await setFelt(user?.token, data, navigation)
-            setHoveredPostId(null);
-            handleGetUserPost();
+            handleGetUserPost()
         } catch (error) {
             console.log(error)
         }
     }
 
-    const handleUnLike = async (postId) => {
+    const handleLike = async(postId, type, newReaction) => {
+        try {
+            setReactions((prevReactions) => ({
+                ...prevReactions,
+                [postId]: newReaction,
+              }));
+            
+            setHoveredPostId(null);
+            
+            clearTimeout(window.reactionTimeout);
+            window.reactionTimeout = setTimeout(() => {
+                handleSetFelt(postId, type);
+            }, 1500);
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleUnFelt = async(postId) => {       
         try {
             await unFelt(user?.token, postId, navigation)
+            handleGetUserPost()
+        } catch (error) {
+            console.log(error)
+        }
+    }  
+
+    const handleUnLike = async (postId, newReaction) => {
+        try {
+            setReactions((prevReactions) => ({
+                ...prevReactions,
+                [postId]: newReaction,
+            }));
+            
             setHoveredPostId(null);
-            handleGetUserPost();
+
+            clearTimeout(window.reactionTimeout);
+            window.reactionTimeout = setTimeout(() => {
+                handleUnFelt(postId);
+            }, 1500);
+
         } catch (error) {
             console.log(error)
         }
     }
 
-    const handleUpdateFelt = async(postId, type) => {
+    const handleSetUpdateFelt = async(postId, type) => {
         try {
             const data = {
                 type: type
-            } 
-            await updateFelt(user?.token, data, postId, navigation) 
-            setHoveredPostId(null);
+            }   
+            await updateFelt(user?.token, data, postId, navigation)  
             handleGetUserPost();         
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleUpdateFelt = async(postId, type, newReaction) => {
+        try {
+
+            setReactions((prevReactions) => ({
+                ...prevReactions,
+                [postId]: newReaction,
+              }));
+            
+            setHoveredPostId(null);
+            clearTimeout(window.reactionTimeout);
+            window.reactionTimeout = setTimeout(() => {
+                handleSetUpdateFelt(postId, type);
+            }, 1500);
+       
         } catch (error) {
             console.log(error)
         }
@@ -229,6 +310,7 @@ const UserPosts = () => {
             ) : (
                 <>
                     {posts?.map((post) => {
+                        const reaction = reactions[post.postId] || "";
                         return (
                             <div key={post?.postId} 
                                 className='bg-white mt-0 mb-4 border border-white shadow rounded-md flex-1 items-center'
@@ -462,9 +544,9 @@ const UserPosts = () => {
                                                 onMouseEnter={() => handleMouseEnter(post?.postId)}
                                                 onMouseLeave={handleMouseLeave}
                                             >
-                                                {post?.is_feel === '1' ? (
+                                                {reaction === 'like' ? (
                                                     <div className='w-full flex items-center justify-center py-1'
-                                                        onClick={() => handleUnLike(post?.postId)}
+                                                        onClick={() => handleUnLike(post?.postId, '')}
                                                     >
                                                         <img className='h-6 w-6 ml-2'
                                                             src={require("../../../assets/icons/like-blue.png")}
@@ -474,9 +556,9 @@ const UserPosts = () => {
                                                             Like
                                                         </p>
                                                     </div>
-                                                ) : post?.is_feel === '2' ? (
+                                                ) : reaction === 'love' ? (
                                                     <div className='w-full flex items-center justify-center py-1'
-                                                        onClick={() => handleUnLike(post?.postId)}
+                                                        onClick={() => handleUnLike(post?.postId, '')}
                                                     >
                                                         <img className='h-6 w-6 ml-2'
                                                             src={require("../../../assets/icons/love.png")}
@@ -486,9 +568,9 @@ const UserPosts = () => {
                                                             Love
                                                         </p>
                                                     </div>
-                                                ) : post?.is_feel === '3' ? (
+                                                ) : reaction === 'haha' ? (
                                                     <div className='w-full flex items-center justify-center py-1'
-                                                        onClick={() => handleUnLike(post?.postId)}
+                                                        onClick={() => handleUnLike(post?.postId, '')}
                                                     >
                                                         <img className='h-6 w-6 ml-2'
                                                             src={require("../../../assets/icons/haha.png")}
@@ -498,9 +580,9 @@ const UserPosts = () => {
                                                             Haha
                                                         </p>
                                                     </div>
-                                                ) : post?.is_feel === '4' ? (
+                                                ) : reaction === 'sad' ? (
                                                     <div className='w-full flex items-center justify-center py-1'
-                                                        onClick={() => handleUnLike(post?.postId)}
+                                                        onClick={() => handleUnLike(post?.postId, '')}
                                                     >
                                                         <img className='h-6 w-6 ml-2'
                                                             src={require("../../../assets/icons/sad.png")}
@@ -512,7 +594,7 @@ const UserPosts = () => {
                                                     </div>
                                                 ) : (
                                                     <div className='w-full flex items-center justify-center py-1'
-                                                        onClick={() => handleLike(post?.postId, '1')}
+                                                        onClick={() => handleLike(post?.postId, '1', 'like')}
                                                     >
                                                         <img className='h-6 w-6 ml-2'
                                                             src={require("../../../assets/icons/like.png")}
@@ -548,33 +630,33 @@ const UserPosts = () => {
                                             >
                                                 <div className='flex justify-between'>
                                                     <div className='flex flex-col items-center cursor-pointer hover:bg-gray-200 p-1.5 rounded-md'
-                                                        onClick={() => post?.is_feel === -1 
-                                                            ? handleLike(post?.postId, '1') 
-                                                            : handleUpdateFelt(post?.postId, '1')}
+                                                        onClick={() => reaction === '' 
+                                                            ? handleLike(post?.postId, '1', 'like') 
+                                                            : handleUpdateFelt(post?.postId, '1', 'like')}
                                                     >
                                                         <img className='h-6 w-6' src={require("../../../assets/icons/like-blue.png")} alt='Like' />
                                                         <p className='text-customBlue text-xs'>Like</p>
                                                     </div>
                                                     <div className='flex flex-col items-center cursor-pointer hover:bg-gray-200 p-1.5 rounded-md'
-                                                        onClick={() => post?.is_feel === -1 
-                                                            ? handleLike(post?.postId, '2') 
-                                                            : handleUpdateFelt(post?.postId, '2')}
+                                                        onClick={() => reaction === '' 
+                                                            ? handleLike(post?.postId, '2', 'love') 
+                                                            : handleUpdateFelt(post?.postId, '2', 'love')}
                                                     >
                                                         <img className='h-6 w-6' src={require("../../../assets/icons/love.png")} alt='Love' />
                                                         <p className='text-red-500 text-xs'>Love</p>
                                                     </div>
                                                     <div className='flex flex-col items-center cursor-pointer hover:bg-gray-200 p-1.5 rounded-md'
-                                                        onClick={() => post?.is_feel === -1 
-                                                            ? handleLike(post?.postId, '3') 
-                                                            : handleUpdateFelt(post?.postId, '3')}
+                                                        onClick={() => reaction === '' 
+                                                            ? handleLike(post?.postId, '3', 'haha') 
+                                                            : handleUpdateFelt(post?.postId, '3', 'haha')}
                                                     >
                                                         <img className='h-6 w-6' src={require("../../../assets/icons/haha.png")} alt='Haha' />
                                                         <p className='text-orange-400 text-xs'>Haha</p>
                                                     </div>
                                                     <div className='flex flex-col items-center cursor-pointer hover:bg-gray-200 p-1.5 rounded-md'
-                                                        onClick={() => post?.is_feel === -1 
-                                                            ? handleLike(post?.postId, '4') 
-                                                            : handleUpdateFelt(post?.postId, '4')}
+                                                        onClick={() => reaction === '' 
+                                                            ? handleLike(post?.postId, '4', 'sad') 
+                                                            : handleUpdateFelt(post?.postId, '4', 'sad')}
                                                     >
                                                         <img className='h-6 w-6' src={require("../../../assets/icons/sad.png")} alt='Sad' />
                                                         <p className='text-orange-400 text-xs'>Sad</p>
