@@ -100,6 +100,20 @@ export const addMess = async (token, message, navigate) => {
     }
 }
 
+export const deleteMessage = async (token, messageId, navigate) => {
+    try {
+        await axios.delete(`${apiUrl}/chat/delete-message/${messageId}`, {
+            headers: {token: `Bearer ${token}`}
+        })       
+    } catch (error) {
+        console.log(error)
+        if(error?.response.data === 'Token is not valid!'){
+            navigate('/login');
+            toast.info("Your session has expired.");
+        }        
+    }
+}
+
 export const getMembers = async (token, chatId, navigate) => {
     try {
         const res = await axios.get(`${apiUrl}/chat/get-members/${chatId}`, {

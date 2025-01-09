@@ -4,6 +4,7 @@ import GetAllPosts from '../../../components/post/GetAllPosts';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAllPosts } from '../../../api/post/post';
+import LoadingSpinner from '../../../components/spinner/LoadingSpinner';
 
 const GetPosts = () => {
     const user = useSelector((state) => state.auth.login?.currentUser)
@@ -11,6 +12,7 @@ const GetPosts = () => {
     const profile = useSelector((state) => state?.auth?.profile)
   
     const [showModal, setShowModal] = useState(false)
+    const [loading, setLoading] = useState(false)
   
     // eslint-disable-next-line
     const [params, setParams] = useState({
@@ -22,10 +24,13 @@ const GetPosts = () => {
     const dispatch = useDispatch();
   
     const handleGetListPosts = async() => {
+      setLoading(true)
       try {
         await getAllPosts(user?.token, dispatch, params, navigate)
       } catch (error) {
         console.error('Errors:', error);
+      } finally{
+        setLoading(false)
       }
     }
   
@@ -117,6 +122,11 @@ const GetPosts = () => {
                 profile = {profile}
             />
         </div>
+        {loading && (
+          <div className='flex justify-center'>
+            <LoadingSpinner/>
+          </div>
+        )}
         <div ref={loadMoreRef} style={{ height: '20px' }} />        
     </div>
   )
