@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getAPost } from '../../../api/post/post';
 import { useDispatch, useSelector } from 'react-redux';
@@ -41,8 +43,8 @@ const GetAPost = () => {
     const [incomingCall, setIncomingCall] = useState(null); // Lưu thông tin cuộc gọi
     const [audio, setAudio] = useState(null); // Lưu âm thanh gọi    
 
-    const [postPromise, setPost] = useState({})
-    const [postGroup, setPostGroup] = useState({})
+    const [postPromise, setPost] = useState(null)
+    const [postGroup, setPostGroup] = useState(null)
     const [description, setDescription] = useState('');
     const [image, setImage] = useState(null)
     const [imagePreview, setImagePreview] = useState(null)
@@ -55,7 +57,7 @@ const GetAPost = () => {
     const [loading, setLoading] = useState(false)
     const [onlineUsers, setOnlineUsers] = useState([]);
 
-    const post = postPromise || postGroup;
+    const post = postGroup || postPromise;
 
     useEffect(() => {
         socket.emit('online')
@@ -305,89 +307,101 @@ const GetAPost = () => {
                                 {onlineUsers?.includes(post?.author?.authorId) && (
                                     <div className='w-3 h-3 border-2 border-white rounded-full bg-green-600 absolute mt-[29px] ml-[29px]'></div>
                                 )}
-                                <div className='w-10 h-10'>
-                                    <img className='h-full w-full object-cover rounded-full  hover:opacity-90'
-                                        src= {post?.author?.authorAvatar}
-                                        alt='Avatar'
-                                    />
-                                </div>
-                                <div className='ml-3'>
-                                    <h1 className='font-medium text-base'>
-                                        {post?.author?.authorName}
-                                    </h1>
-                                    <p className='text-xs text-gray-500'>
-                                        {timeAgo(post?.post?.createdAt)}
-                                    </p>
-                                </div>
+                                {!post ? (
+                                    <Skeleton circle width={40} height={40} />
+                                ):(
+                                    <div className='w-10 h-10'>
+                                        <img className='h-full w-full object-cover rounded-full  hover:opacity-90'
+                                            src= {post?.author?.authorAvatar}
+                                            alt='Avatar'
+                                        />
+                                    </div>                                    
+                                )}
+                                {!post ? (
+                                    <Skeleton width={100} height={30} className='ml-3'/>
+                                ):(
+                                    <div className='ml-3'>
+                                        <h1 className='font-medium text-base'>
+                                            {post?.author?.authorName}
+                                        </h1>
+                                        <p className='text-xs text-gray-500'>
+                                            {timeAgo(post?.post?.createdAt)}
+                                        </p>
+                                    </div>                                    
+                                )}
                             </div>
-                            <div>
-                                {post?.post?.typeText === false ?(
-                                    <p className='ml-3.5 font-mono' style={{color: "#333333"}}>
-                                        {post?.post?.description ? (
-                                            convertNewlinesToBreaks(post?.post?.description)
-                                        ) : (
-                                            ''
-                                        )}
-                                    </p>
-                                ) : (
-                                    <p className='ml-3.5 font-sans' style={{color: "#050505"}}>
-                                        {post?.post?.description ? (
-                                            convertNewlinesToBreaks(post?.post?.description)
-                                        ) : (
-                                            ''
-                                        )}
-                                    </p>
-                                )} 
-                                <div className='mt-2 cursor-pointer'>
-                                    {(post?.post?.video == null || !post?.post?.video) ? (
-                                        <>
-                                            {post?.post?.images.length > 5 ? (
-                                                <SixPictures
-                                                    selectedImages={post?.post?.images.map(img => img.url)} 
-                                                    extraImagesCount={post?.post?.images.length - 4}
-                                                />
-                                            ) : post?.post?.images.length === 5 ? (
-                                                <FivePictures selectedImages={post?.post?.images.map(img => img.url)}/>
-                                            ) : post?.post?.images.length === 4 ? (
-                                                <FourPictures selectedImages={post?.post?.images.map(img => img.url)}/>
-                                            ) : post?.post?.images.length === 3 ? (
-                                                <ThreePictures selectedImages={post?.post?.images.map(img => img.url)}/>
-                                            ) : post?.post?.images.length === 2 ? (
-                                                <TwoPictures selectedImages={post?.post?.images.map(img => img.url)}/>
-                                            ) : post?.post?.images.length === 1 ? (
-                                                <OnePicture selectedImages={post?.post?.images.map(img => img.url)}/>
-                                            ) : ('')}
-                                        </>
-                                    ) : (
-                                        <>  
-                                            {post?.post?.images.length > 3 ? (
-                                                <VideoPlayer5
-                                                    url = {post?.post?.video.url}
-                                                    selectedImages = {post?.post?.images.map(img => img.url)}
-                                                    extraImagesCount={post?.post?.images.length - 2}
-                                                /> 
-                                            ) : post?.post?.images.length === 3 ? (
-                                                <VideoPlayer4
-                                                    url = {post?.post?.video.url}
-                                                    selectedImages = {post?.post?.images.map(img => img.url)}
-                                                />                                        
-                                            ) : post?.post?.images.length === 2 ? (
-                                                <VideoPlayer3
-                                                    url = {post?.post?.video.url}
-                                                    selectedImages = {post?.post?.images.map(img => img.url)}
-                                                />                                        
-                                            ) : post?.post?.images.length === 1 ? (
-                                                <VideoPlayer2 
-                                                    url = {post?.post?.video.url}
-                                                    selectedImages = {post?.post?.images.map(img => img.url)}
-                                                />                                        
+                            {!post ? (
+                                <Skeleton width={732} height={300} className='mx-4'/>
+                            ):(
+                                <div>
+                                    {post?.post?.typeText === false ?(
+                                        <p className='ml-3.5 font-mono' style={{color: "#333333"}}>
+                                            {post?.post?.description ? (
+                                                convertNewlinesToBreaks(post?.post?.description)
                                             ) : (
-                                                <VideoPlayer url = {post?.post?.video.url}/>
-                                            )} 
-                                        </>
+                                                ''
+                                            )}
+                                        </p>
+                                    ) : (
+                                        <p className='ml-3.5 font-sans' style={{color: "#050505"}}>
+                                            {post?.post?.description ? (
+                                                convertNewlinesToBreaks(post?.post?.description)
+                                            ) : (
+                                                ''
+                                            )}
+                                        </p>
                                     )} 
-                                </div>                                                   
-                            </div>
+                                    <div className='mt-2 cursor-pointer'>
+                                        {(post?.post?.video == null || !post?.post?.video) ? (
+                                            <>
+                                                {post?.post?.images.length > 5 ? (
+                                                    <SixPictures
+                                                        selectedImages={post?.post?.images.map(img => img.url)} 
+                                                        extraImagesCount={post?.post?.images.length - 4}
+                                                    />
+                                                ) : post?.post?.images.length === 5 ? (
+                                                    <FivePictures selectedImages={post?.post?.images.map(img => img.url)}/>
+                                                ) : post?.post?.images.length === 4 ? (
+                                                    <FourPictures selectedImages={post?.post?.images.map(img => img.url)}/>
+                                                ) : post?.post?.images.length === 3 ? (
+                                                    <ThreePictures selectedImages={post?.post?.images.map(img => img.url)}/>
+                                                ) : post?.post?.images.length === 2 ? (
+                                                    <TwoPictures selectedImages={post?.post?.images.map(img => img.url)}/>
+                                                ) : post?.post?.images.length === 1 ? (
+                                                    <OnePicture selectedImages={post?.post?.images.map(img => img.url)}/>
+                                                ) : ('')}
+                                            </>
+                                        ) : (
+                                            <>  
+                                                {post?.post?.images.length > 3 ? (
+                                                    <VideoPlayer5
+                                                        url = {post?.post?.video.url}
+                                                        selectedImages = {post?.post?.images.map(img => img.url)}
+                                                        extraImagesCount={post?.post?.images.length - 2}
+                                                    /> 
+                                                ) : post?.post?.images.length === 3 ? (
+                                                    <VideoPlayer4
+                                                        url = {post?.post?.video.url}
+                                                        selectedImages = {post?.post?.images.map(img => img.url)}
+                                                    />                                        
+                                                ) : post?.post?.images.length === 2 ? (
+                                                    <VideoPlayer3
+                                                        url = {post?.post?.video.url}
+                                                        selectedImages = {post?.post?.images.map(img => img.url)}
+                                                    />                                        
+                                                ) : post?.post?.images.length === 1 ? (
+                                                    <VideoPlayer2 
+                                                        url = {post?.post?.video.url}
+                                                        selectedImages = {post?.post?.images.map(img => img.url)}
+                                                    />                                        
+                                                ) : (
+                                                    <VideoPlayer url = {post?.post?.video.url}/>
+                                                )} 
+                                            </>
+                                        )} 
+                                    </div>                                                   
+                                </div>                                
+                            )}
                             <div className=''>
                                 <div className='flex mt-2 mb-2'>
                                     <div className='w-1/2 flex-1 flex items-center '>

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import { useNavigate } from 'react-router-dom';
 import { getUserGroups } from '../../api/group/group';
 
@@ -94,26 +96,35 @@ const LeftBar = ({profile, user}) => {
         </p>       
       </div>
 
-      <div className='border-t border-gray-300'>
-        <h1 className='font-medium text-gray-500 mt-1 ml-1'>
-          Your shortcuts
-        </h1>
-        <div>
-          {groups?.map((group) => (
-            <div key={group._id} className='flex items-center mb-1 py-2 px-2 hover:bg-gray-200 rounded-lg cursor-pointer'
-              onClick={()=> handleGetGroup(group._id)}
-            >
-              <img className='w-10 h-10 rounded-md object-cover'
-                src={group.avatar}
-                alt=''
-              />
-              <h1 className='font-medium text-[15px] ml-3'>
-                {group.name}  
-              </h1> 
+        <div className='border-t border-gray-300'>
+          <h1 className='font-medium text-gray-500 mt-1 ml-1'>
+            Your shortcuts
+          </h1>
+          {groups?.length === 0 ? (
+            <>
+              <Skeleton width={320} height={50}/>
+              <Skeleton width={320} height={50}/>
+              <Skeleton width={320} height={50}/>        
+            </>
+          ):(
+            <div>
+              {groups?.map((group) => (
+                <div key={group._id} className='flex items-center mb-1 py-2 px-2 hover:bg-gray-200 rounded-lg cursor-pointer'
+                  onClick={()=> handleGetGroup(group._id)}
+                >
+                  <img className='w-10 h-10 rounded-md object-cover'
+                    src={group.avatar}
+                    alt=''
+                  />
+                  <h1 className='font-medium text-[15px] ml-3'>
+                    {group.name}  
+                  </h1> 
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+          )}
+        </div>        
+
     </div>
   )
 }

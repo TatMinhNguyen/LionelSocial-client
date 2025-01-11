@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import LightGallery from 'lightgallery/react';
 
 // import styles
@@ -27,7 +29,7 @@ const Profile = () => {
     const user = useSelector((state) => state.auth.login?.currentUser)
     const myProfile = useSelector((state) => state?.auth?.profile)
     // const profile = useSelector((state) => state?.auth?.profileDiff)
-    const [profile, setProfile] = useState({})
+    const [profile, setProfile] = useState(null)
     
     const location = useLocation(); 
     const [showEditAvatar, setShowEditAvatar] = useState(false)
@@ -235,7 +237,7 @@ const Profile = () => {
         // console.log('lightGallery has been initialized');
     };
 
-    let information = {}
+    let information = null
     if(user?.userId === userId) {
         information = myProfile
     }
@@ -252,19 +254,24 @@ const Profile = () => {
             </div>
             <div className=' w-3/4  pt-11'>
                 <div className='w-full bg-white shadow rounded-xl'>
-                    <div className='relative'>                          
-                        <LightGallery
-                            onInit={onInit}
-                            speed={500}
-                            plugins={[lgZoom]}
-                            elementClassNames="flex h-full w-full"
-                        >
-                            <img
-                                className='w-full h-[55vh] object-cover rounded-xl cursor-pointer shadow'
-                                src={information?.coverPicture}
-                                alt=''
-                            />                        
-                        </LightGallery> 
+                    <div className='relative'>  
+                        {!information ? (
+                            <Skeleton className='w-full h-[55vh]'/>
+                        ) : (
+                            <LightGallery
+                                onInit={onInit}
+                                speed={500}
+                                plugins={[lgZoom]}
+                                elementClassNames="flex h-full w-full"
+                            >
+                                <img
+                                    className='w-full h-[55vh] object-cover rounded-xl cursor-pointer shadow'
+                                    src={information?.coverPicture}
+                                    alt=''
+                                />                        
+                            </LightGallery>                             
+                        )}                        
+
                         {userId === user?.userId && (
                             <div 
                                 onClick={() => setShowEditCover(true)}
@@ -288,18 +295,23 @@ const Profile = () => {
                         )}                      
                     </div>
                     <div className='flex-1 flex items-center pb-3 relative z-10'>
-                        <LightGallery
-                            onInit={onInit}
-                            speed={500}
-                            plugins={[lgZoom]}
-                            elementClassNames=""
-                        >
-                        <img
-                            className='w-44 h-44 object-cover rounded-full border-4 border-white ml-12 -mt-20 cursor-pointer'
-                            src={information?.profilePicture}
-                            alt=''
-                        />                        
-                        </LightGallery>
+                        {!information ? (
+                            <Skeleton circle width={176} height={176} className='ml-12 -mt-20'/>
+                        ) : (
+                            <LightGallery
+                                onInit={onInit}
+                                speed={500}
+                                plugins={[lgZoom]}
+                                elementClassNames=""
+                            >
+                            <img
+                                className='w-44 h-44 object-cover rounded-full border-4 border-white ml-12 -mt-20 cursor-pointer'
+                                src={information?.profilePicture}
+                                alt=''
+                            />                        
+                            </LightGallery>                            
+                        )}
+
                         {userId === user?.userId && (
                             <div className='-ml-12 mt-12 mr-2 p-1.5 rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200 border-2 border-white'
                                     onClick={handleShowEditAvatar}
@@ -321,16 +333,20 @@ const Profile = () => {
                                 isCloseModal = {() => setShowEditAvatar(false)}
                             />
                         )}
-                        <div className='ml-4'>
-                            <h1 className='text-2xl font-bold'>
-                                {information?.username}
-                            </h1> 
-                            <div className=''>
-                                <p className='text-gray-500 justify-self-start font-normal cursor-pointer hover:text-gray-400 p-0'>
-                                    {information?.friendsCount} friends
-                                </p>                                 
-                            </div>                          
-                        </div>
+                        {!information ? (
+                            <Skeleton width={176} height={50} className='ml-4'/>
+                        ) : (
+                            <div className='ml-4'>
+                                <h1 className='text-2xl font-bold'>
+                                    {information?.username}
+                                </h1> 
+                                <div className=''>
+                                    <p className='text-gray-500 justify-self-start font-normal cursor-pointer hover:text-gray-400 p-0'>
+                                        {information?.friendsCount} friends
+                                    </p>                                 
+                                </div>                          
+                            </div>                            
+                        )}
                         <div className='flex-1'></div>
                         <div>
                             {userId == user?.userId ? (
@@ -540,72 +556,81 @@ const Profile = () => {
                     )}
                 </div>
                 <div className='mt-4 flex '>
-                    <div className='w-1/3 bg-white mr-2 border border-white shadow rounded-md self-start mb-2'>
-                        <p className='text-xl font-bold font-sans m-2 ml-4 mb-5'>
-                            Introduction  
-                        </p>
-                        <div className='flex ml-4'>
-                            <img
-                                src={require('../../assets/icons/work.png')}
-                                alt=''
-                                className='w-5 h-5 mt-0.5'
-                            />
-                            {information?.work === '' ? (
-                                <p className='ml-3 text-gray-500'>
-                                    No information about the job
-                                </p>
-                            ) : (
-                                <p className='ml-3 text-gray-900'>
-                                    Works at {information?.work}
-                                </p>                                
-                            )}
-                        </div>
-                        <div className='flex ml-4 my-3'>
-                            <img
-                                src={require('../../assets/icons/location.png')}
-                                alt=''
-                                className='w-5 h-5 mt-0.5'
-                            />
-                            {information?.address === '' ? (
-                                <p className='ml-3 text-gray-500'>
-                                    No information about the address
-                                </p>
-                            ) : (
-                                <p className='ml-3 text-gray-900 flex'>
-                                    Lives in <p className='font-medium ml-1.5'>{information?.address}</p>
-                                </p>                                
-                            )}
-                        </div>
-                        <div className='flex ml-4 my-3'>
-                            <img
-                                src={require('../../assets/icons/clock.png')}
-                                alt=''
-                                className='w-5 h-5 mt-0.5'
-                            />
-                            <p className='ml-3 text-gray-900'>
-                                Joined {formatToMonthYear(information?.createdAt)} 
+                    {!information ? (
+                        <Skeleton width={500} height={200} className='mr-2'/>
+                    ) : (
+                        <div className='w-1/3 bg-white mr-2 border border-white shadow rounded-md self-start mb-2'>
+                            <p className='text-xl font-bold font-sans m-2 ml-4 mb-5'>
+                                Introduction  
                             </p>
-                        </div>
-                    </div>
-                    <div className='w-2/3 ml-2'>
-                        <div className='flex bg-white border border-white shadow rounded-md mb-3'>
-                            <div className='w-1/2  flex-1 flex items-center justify-center '
-                                    onClick={handleGetPost}
-                            >
-                                <p className={`text-lg font-bold font-mono mt-2 cursor-pointer ${location.pathname === `/get-profile/${userId}` ? 'border-b-4 border-b-customBlue pb-1' : 'pb-2'}`}>
-                                    Posts
-                                </p>                                
+                            <div className='flex ml-4'>
+                                <img
+                                    src={require('../../assets/icons/work.png')}
+                                    alt=''
+                                    className='w-5 h-5 mt-0.5'
+                                />
+                                {information?.work === '' ? (
+                                    <p className='ml-3 text-gray-500'>
+                                        No information about the job
+                                    </p>
+                                ) : (
+                                    <p className='ml-3 text-gray-900'>
+                                        Works at {information?.work}
+                                    </p>                                
+                                )}
                             </div>
-                            <div className='w-1/2 flex-1 flex items-center justify-center r'
-                                    onClick={handleGetFriends}
-                            >
-                                <p className={`text-lg font-bold font-mono mt-2 cursor-pointer ${location.pathname === `/get-profile/${userId}/friends` ? 'border-b-4 border-b-customBlue pb-1' : 'pb-2'}`}>
-                                    Friends
-                                </p>                                
+                            <div className='flex ml-4 my-3'>
+                                <img
+                                    src={require('../../assets/icons/location.png')}
+                                    alt=''
+                                    className='w-5 h-5 mt-0.5'
+                                />
+                                {information?.address === '' ? (
+                                    <p className='ml-3 text-gray-500'>
+                                        No information about the address
+                                    </p>
+                                ) : (
+                                    <p className='ml-3 text-gray-900 flex'>
+                                        Lives in <p className='font-medium ml-1.5'>{information?.address}</p>
+                                    </p>                                
+                                )}
                             </div>
-                        </div>
-                        <Outlet context={userId}/>
-                    </div>
+                            <div className='flex ml-4 my-3'>
+                                <img
+                                    src={require('../../assets/icons/clock.png')}
+                                    alt=''
+                                    className='w-5 h-5 mt-0.5'
+                                />
+                                <p className='ml-3 text-gray-900'>
+                                    Joined {formatToMonthYear(information?.createdAt)} 
+                                </p>
+                            </div>
+                        </div>                        
+                    )}
+                    {!information ? (
+                        <Skeleton width={620} height={400} className='ml-2'/>
+                    ):(
+                        <div className='w-2/3 ml-2'>
+                            <div className='flex bg-white border border-white shadow rounded-md mb-3'>
+                                <div className='w-1/2  flex-1 flex items-center justify-center '
+                                        onClick={handleGetPost}
+                                >
+                                    <p className={`text-lg font-bold font-mono mt-2 cursor-pointer ${location.pathname === `/get-profile/${userId}` ? 'border-b-4 border-b-customBlue pb-1' : 'pb-2'}`}>
+                                        Posts
+                                    </p>                                
+                                </div>
+                                <div className='w-1/2 flex-1 flex items-center justify-center r'
+                                        onClick={handleGetFriends}
+                                >
+                                    <p className={`text-lg font-bold font-mono mt-2 cursor-pointer ${location.pathname === `/get-profile/${userId}/friends` ? 'border-b-4 border-b-customBlue pb-1' : 'pb-2'}`}>
+                                        Friends
+                                    </p>                                
+                                </div>
+                            </div>
+                            <Outlet context={userId}/>
+                        </div>                        
+                    )}
+
                 </div>
             </div>
         </div>

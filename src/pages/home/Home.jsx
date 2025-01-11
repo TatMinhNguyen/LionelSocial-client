@@ -6,6 +6,7 @@ import { getMyProfile } from '../../api/profile/profile';
 import RightBar from '../../components/rightbar/RightBar';
 import LeftBar from '../../components/leftbar/LeftBar';
 import { clearGroup } from '../../redux/groupSlice';
+import { setClearChat } from '../../redux/chatSlice';
 
 const Home = () => {
   const user = useSelector((state) => state.auth.login?.currentUser)
@@ -32,6 +33,7 @@ const Home = () => {
     if(user?.token) {
       handleGetProfile();
       dispatch(clearGroup())
+      dispatch(setClearChat())
     }
   }, []);
 
