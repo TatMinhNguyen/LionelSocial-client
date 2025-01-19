@@ -97,6 +97,20 @@ export const unBan = async (token, userId) => {
     }
 }
 
+export const getBanedUser = async (token) => {
+    try {
+        const res = await axios.get(`${apiUrl}/admin/get-baners`, {
+            headers: {token: `Bearer ${token}`}
+        })
+        return res.data
+    } catch (error) {
+        console.log(error)
+        if(error?.response.data === 'Token is not valid!'){
+            TokenInvalid();
+        }        
+    }
+}
+
 export const getDetailReportUser = async(token, userId) => {
     try {
         const res = await axios.get(`${apiUrl}/admin/get-detail-report-user/${userId}`, {

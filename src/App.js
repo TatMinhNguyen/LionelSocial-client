@@ -43,6 +43,7 @@ import Room from './pages/call/Room';
 import GetPosts from './pages/home/getPosts/GetAllPosts';
 import GetFriendPosts from './pages/home/getPosts/GetFriendPosts';
 import GetGroupReported from './components/admin/GetGroupReported';
+import GetBanedUser from './components/admin/GetBanedUser';
 
 function App() {
   const user = useSelector((state) => state.auth.login?.currentUser)
@@ -102,6 +103,7 @@ function App() {
             <Route path='reported-posts' element={<GetPostReported/>}/>
             <Route path='reported-users' element={<GetBannedUser/>}/>
             <Route path='reported-groups' element={<GetGroupReported/>}/>
+            <Route path='banned-users' element={<GetBanedUser/>}/>
         </Route> 
       </Routes>
       {/* Toast Container */}

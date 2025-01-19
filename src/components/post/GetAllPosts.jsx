@@ -468,7 +468,7 @@ const GetAllPosts = ({user, posts, params, profile, groupId}) => {
                             />
                         )}
                     </div>
-                    <div  className='cursor-pointer'>
+                    <div  className=''>
                         {post?.typeText === false ?(
                             <p className='ml-3.5 font-mono' style={{color: "#333333"}}>
                                 {post?.description ? (
@@ -486,7 +486,7 @@ const GetAllPosts = ({user, posts, params, profile, groupId}) => {
                                 )}
                             </p>
                         )}
-                        <div className='mt-2'>
+                        <div className='mt-2 cursor-pointer'>
                             {(post?.video == null || !post?.video) ? (
                                 <>
                                     {post?.images.length > 5 ? (

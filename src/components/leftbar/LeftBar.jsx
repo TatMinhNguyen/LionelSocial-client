@@ -100,7 +100,7 @@ const LeftBar = ({profile, user}) => {
           <h1 className='font-medium text-gray-500 mt-1 ml-1'>
             Your shortcuts
           </h1>
-          {groups?.length === 0 ? (
+          {groups?.length === 0 && user?.isAdmin === false ? (
             <>
               <Skeleton width={320} height={50}/>
               <Skeleton width={320} height={50}/>
