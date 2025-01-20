@@ -15,7 +15,6 @@ const Room = () => {
   const peerInstance = useRef();
   const [stream, setStream] = useState(null);
   const [remoteStreams, setRemoteStreams] = useState([]);
-  // console.log(stream)
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
