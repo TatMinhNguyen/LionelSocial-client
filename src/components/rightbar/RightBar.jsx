@@ -92,11 +92,20 @@ const RightBar = ({user}) => {
   }, []);
 
   /* eslint-disable */
-  useEffect(()=> {
-    handleGetRequestFriends();
-    handleGetFriends();
-    handleGetSuggestions();
-  },[])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await handleGetRequestFriends(); // Gọi API handleGetRequestFriends trước
+        await handleGetFriends();       // Sau đó gọi handleGetFriends
+        await handleGetSuggestions();   // Cuối cùng gọi handleGetSuggestions
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className='w-[22vw] -mt-2 overflow-y-auto h-[94vh] no-scrollbar relative'>
       <div className=' pb-1 mx-2'>

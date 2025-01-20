@@ -34,9 +34,10 @@ const ViewAdminGroup = () => {
   return (
     <div>
       <div className='flex items-center border-b border-gray-200 pb-3'>
-        <img className='h-12 w-12 object-cover rounded-md shadow'
+        <img className='h-12 w-12 object-cover rounded-md shadow cursor-pointer'
           src={group?.avatar}
           alt=''
+          onClick={() => navigate('/groups')}
         />   
         <div className='ml-3'>
           <h3 className='font-medium text-[15px]'>
