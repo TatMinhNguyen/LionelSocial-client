@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Skeleton from 'react-loading-skeleton';
+// import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { useNavigate } from 'react-router-dom';
 import { getUserGroups } from '../../api/group/group';
