@@ -100,13 +100,13 @@ const LeftBar = ({profile, user}) => {
           <h1 className='font-medium text-gray-500 mt-1 ml-1'>
             Your shortcuts
           </h1>
-          {groups?.length === 0 && user?.isAdmin === false ? (
+          {/* {groups?.length === 0 && user?.isAdmin === false ? (
             <>
               <Skeleton width={320} height={50}/>
               <Skeleton width={320} height={50}/>
               <Skeleton width={320} height={50}/>        
             </>
-          ):(
+          ):( */}
             <div>
               {groups?.map((group) => (
                 <div key={group._id} className='flex items-center mb-1 py-2 px-2 hover:bg-gray-200 rounded-lg cursor-pointer'
@@ -122,7 +122,7 @@ const LeftBar = ({profile, user}) => {
                 </div>
               ))}
             </div>
-          )}
+          {/* )} */}
         </div>        
 
     </div>
